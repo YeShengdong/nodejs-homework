@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon --exec babel-node ./src/app.js",
     "build": "npm-run-all clean transpile",
     "clean": "rimraf ./dist",
     "transpile": "babel ./src --out-dir dist",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "task-1": "node ./dist/task-1",
-    "task-2": "node ./dist/task-2"
+    "lint": "npx eslint ./src --cache --fix --ext .js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -22,12 +22,18 @@
   },
   "homepage": "https://github.com/YeShengdong/nodejs-homework#readme",
   "dependencies": {
-    "csvtojson": "^2.0.10"
+    "csvtojson": "^2.0.10",
+    "express": "^4.17.1",
+    "express-joi-validation": "^5.0.0",
+    "joi": "^17.4.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.10",
     "@babel/core": "^7.13.10",
+    "@babel/node": "^7.13.13",
     "@babel/preset-env": "^7.13.10",
+    "eslint": "^7.23.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2"
   }
