@@ -1,5 +1,6 @@
-import { v4 as uuidv4 } from 'uuid'
 import Joi from 'joi'
+import { Op } from '../data-access/sequelize'
+import UsersModel from '../models/users.model'
 
 export const userSchema = Joi.object({
     login: Joi.string().required(),
@@ -7,80 +8,42 @@ export const userSchema = Joi.object({
     age: Joi.number().integer().min(4).max(130).required()
 })
 
-class Users {
-    constructor() {
-        this.users = generateMockUsers(3)
-    }
+class UsersService {
+    constructor() {}
 
-    list(query) {
-        const { loginSubstring, limit = 10 } = query
+    async list(query) {
+        const { loginSubstring, offset = 0, limit = 10 } = query
+        const options = {
+            offset,
+            limit
+        }
 
         if (loginSubstring) {
-            return this.getAutoSuggestUsers(loginSubstring, limit)
+            options.where = {
+                login: {
+                    [Op.like]: `%${loginSubstring}%`,
+                }
+            }
         }
 
-        return this.users.filter((user, index) => index < limit)
+        return await UsersModel.findAndCountAll(options)
     }
 
-    create(data) {
-        const user = { ...data, id: uuidv4(), isDeleted: false }
-
-        this.users.push(user)
-
-        return this.users
+    async create(data) {
+        return await UsersModel.create({ ...data, isDeleted: false })
     }
 
-    find(id) {
-        const user = this.users.find(({ id: userId }) => id === userId)
-
-        return user
+    async findByPk(id) {
+        return await UsersModel.findByPk(id)
     }
 
-    update(id, data) {
-        this.users = this.users.map((user) => {
-            const { id: userId } = user
-
-            return id === userId ? { ...user, ...data } : user
-        })
-
-        return this.users
+    async update(id, data) {
+        return await UsersModel.update({ ...data }, { where: { id } })
     }
 
-    delete(id) {
-        this.users = this.users.map((user) => {
-            const { id: userId } = user
-
-            return id === userId ? { ...user, isDeleted: true } : user
-        })
-
-        return this.users
-    }
-
-    getAutoSuggestUsers(loginSubstring, limit) {
-        return this.users.filter((user, index) => {
-            const { login } = user
-
-            return index < limit && login.includes(loginSubstring)
-        });
+    async delete(id) {
+        return await UsersModel.update({ isDeleted: true }, { where: { id } })
     }
 }
 
-const generateMockUsers = (number = 1) => {
-    const mockUsers = []
-
-    for (let i = 0; i < number; i++) {
-        const user = {
-            id: uuidv4(),
-            login: `admin${i}`,
-            password: `admin${i}`,
-            age: i + 20,
-            isDeleted: false
-        }
-
-        mockUsers.push(user)
-    }
-
-    return mockUsers
-}
-
-export default new Users
+export default new UsersService
