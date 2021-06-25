@@ -1,11 +1,16 @@
 import express from 'express'
 import users from './users'
+import groups from './groups'
 
 const router = express.Router()
 const routeConfigs = [
     {
         path: '/users',
         routes: users
+    },
+    {
+        path: '/groups',
+        routes: groups
     }
 ]
 
