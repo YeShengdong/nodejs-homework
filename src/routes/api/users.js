@@ -9,7 +9,7 @@ router
     .route('/')
     .get(async (req, res) => {
         const data = await usersService.list(req.query)
-
+        
         res.json(data)
     })
     .post(validator.body(userSchema), async (req, res) => {

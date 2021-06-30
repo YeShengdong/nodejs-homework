@@ -1,4 +1,5 @@
 import express from 'express'
+import { logger } from './config/winston'
 import createError from 'http-errors'
 import apiRoutes from './routes/api'
 
@@ -22,7 +23,15 @@ app.use((err, req, res) => {
     res.locals.error = req.app.get('env') === 'development' ? err : {}
 
     res.status(err.status || 500)
-    res.render('error')
+    res.render('Internal Server Error')
+})
+
+process.on('uncaughtException', (err) => {
+    logger.error(err);
+})
+ 
+process.on('unhandledRejection', (error, promise) => {
+    logger.error('Unhandled Rejection at:', promise);
 })
 
 app.listen(port, () => {
