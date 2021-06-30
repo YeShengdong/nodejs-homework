@@ -1,10 +1,9 @@
 import express from 'express'
-import { logger } from './config/winston'
+import 'dotenv/config'
 import createError from 'http-errors'
 import apiRoutes from './routes/api'
 
 const app = express()
-const port = 3000
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -27,13 +26,11 @@ app.use((err, req, res) => {
 })
 
 process.on('uncaughtException', (err) => {
-    logger.error(err);
+    logger.error(err)
 })
  
 process.on('unhandledRejection', (error, promise) => {
-    logger.error('Unhandled Rejection at:', promise);
+    logger.error('Unhandled Rejection at:', promise)
 })
 
-app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
-})
+export default app
